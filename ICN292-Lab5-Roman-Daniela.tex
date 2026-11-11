@@ -1,0 +1,277 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\renewcommand{\ttdefault}{txtt}
+\usepackage[left=1.9cm,right=1.9cm,top=3.2cm,bottom=2.5cm,headheight=1.7cm,headsep=0.4cm,footskip=0.9cm]{geometry}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage[font={footnotesize,it},labelsep=colon,hypcap=false]{caption}
+\usepackage{fancyhdr}
+\usepackage{eso-pic}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+
+\linespread{1.1}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\definecolor{gris}{gray}{0.35}
+\setlength{\fboxsep}{0pt}
+\setlength{\fboxrule}{0.4pt}
+\captionsetup[figure]{name=Imagen}
+\titleformat*{\section}{\normalsize\bfseries}
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\includegraphics[height=1.4cm]{logo_usm}}
+\fancyhead[R]{\footnotesize UNIVERSIDAD TÉCNICA FEDERICO SANTA MARÍA\\DEPARTAMENTO DE INDUSTRIAS\\CAMPUS SANTIAGO VITACURA\\SEGUNDO SEMESTRE 2026}
+\fancyfoot[R]{\footnotesize\thepage}
+
+\AddToShipoutPictureBG{\AtPageLowerLeft{\setlength{\unitlength}{1bp}\color[gray]{0.6}\put(24,24){\framebox(564,744){}}}}
+
+\definecolor{clave}{HTML}{1A8BCB}
+\definecolor{funcion}{HTML}{A8A898}
+\definecolor{texto}{HTML}{E08A14}
+\definecolor{alias}{HTML}{A0422E}
+\definecolor{codigo}{HTML}{212121}
+
+\makeatletter
+\newcommand{\numero}[1]{\ifnum\lst@mode=\lst@Pmode\textcolor{texto}{#1}\else#1\fi}
+\makeatother
+
+\lstset{
+  morestring=[b]',
+  moredelim=[s][\color{alias}]{`}{`},
+  keywords={SELECT,FROM,WHERE,AND,OR,NOT,IS,NULL,IN,BETWEEN,ORDER,BY,GROUP,HAVING,LIMIT,DESC,ASC,AS,LEFT,JOIN,ON,DISTINCT,SET,UPDATE,DELETE,INSERT,INTO,VALUES,AVG},
+  keywords=[2]{COUNT,SUM,MIN,MAX,COALESCE},
+  basicstyle=\ttfamily\footnotesize\color{codigo},
+  keywordstyle=\bfseries\color{clave},
+  keywordstyle=[2]\color{funcion},
+  stringstyle=\color{texto},
+  frame=tb,
+  columns=fullflexible,
+  keepspaces=true,
+  upquote=true,
+  showstringspaces=false,
+  literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {ñ}{{\~n}}1
+           {0}{{\numero{0}}}1 {1}{{\numero{1}}}1 {2}{{\numero{2}}}1 {3}{{\numero{3}}}1 {4}{{\numero{4}}}1 {5}{{\numero{5}}}1 {6}{{\numero{6}}}1 {7}{{\numero{7}}}1 {8}{{\numero{8}}}1 {9}{{\numero{9}}}1
+}
+
+\begin{document}
+
+\begin{center}
+\vspace*{4cm}
+{\fontsize{26}{32}\selectfont\bfseries\textsc{Laboratorio 5}\par}
+\vspace{10pt}
+{\color{lightgray}\rule{0.75\linewidth}{0.5pt}}\par
+\vspace{2pt}
+{\itshape Entregable SQL (2/2): base de datos Andes Bike\par}
+{\color{lightgray}\rule{0.75\linewidth}{0.5pt}}\par
+\vspace{12pt}
+{\fontsize{22}{28}\selectfont\bfseries\textsc{Sistemas de información para la gestión.}\par}
+\vspace{4.5cm}
+{\color{gris}\itshape Daniela Román Schuffenegger, rol 202160649-1, \href{mailto:daniela.roman@usm.cl}{\underline{daniela.roman@usm.cl}}\\
+Paralelo 101\par}
+\vspace{1.8cm}
+{\color{gris}\itshape Profesor: José Luis Sáez.\\
+Ayudantes: Valeria Bobadilla, Catalina Bodaleo, Luis Contreras, Benjamín Jara.\\
+Fecha: 10 de noviembre de 2026\par}
+\end{center}
+\vspace{0.8cm}
+\textbf{Repositorio Github: \href{https://github.com/DanielaRoman7/ICN292-Lab5-Roman-Daniela}{https://github.com/DanielaRoman7/ICN292-Lab5-Roman-Daniela}}
+\newpage
+
+\section*{Consulta 1: ventas de cada vendedor}
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}
+SELECT v.nombre AS `Vendedor`, COUNT(ve.id_venta) AS `Cantidad de ventas`
+FROM vendedores v
+LEFT JOIN ventas ve ON v.id_vendedor = ve.id_vendedor
+GROUP BY v.id_vendedor, v.nombre
+ORDER BY `Cantidad de ventas` DESC, v.nombre;
+\end{lstlisting}
+\centering
+\fcolorbox{gray}{white}{\includegraphics[width=0.31\linewidth]{capturas/consulta01}}
+\captionof{figure}{Cantidad de ventas por vendedor}
+\end{minipage}
+
+\section*{Consulta 2: ventas y unidades por tienda}
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}
+SELECT t.nombre AS `Tienda`,
+       COUNT(ve.id_venta) AS `Ventas`,
+       SUM(ve.unidades) AS `Unidades vendidas`
+FROM tiendas t
+LEFT JOIN vendedores v ON t.id_tienda = v.id_tienda
+LEFT JOIN ventas ve ON v.id_vendedor = ve.id_vendedor
+GROUP BY t.id_tienda, t.nombre
+ORDER BY `Unidades vendidas` DESC;
+\end{lstlisting}
+\centering
+\fcolorbox{gray}{white}{\includegraphics[width=0.39\linewidth]{capturas/consulta02}}
+\captionof{figure}{Ventas y unidades vendidas por tienda}
+\end{minipage}
+
+\section*{Consulta 3: tiendas sin vendedores}
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}
+SELECT t.nombre AS `Tienda`, t.comuna AS `Comuna`
+FROM tiendas t
+LEFT JOIN vendedores v ON t.id_tienda = v.id_tienda
+WHERE v.id_vendedor IS NULL;
+\end{lstlisting}
+\centering
+\fcolorbox{gray}{white}{\includegraphics[width=0.24\linewidth]{capturas/consulta03}}
+\captionof{figure}{Tiendas sin vendedores asignados}
+\end{minipage}
+
+\section*{Consulta 4: modelos sin ventas en junio de 2025}
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}
+SELECT b.modelo AS `Modelo`, b.categoria AS `Categoría`
+FROM bicicletas b
+LEFT JOIN ventas ve ON b.id_bicicleta = ve.id_bicicleta
+    AND ve.fecha BETWEEN '2025-06-01' AND '2025-06-30'
+WHERE ve.id_venta IS NULL
+ORDER BY b.modelo;
+\end{lstlisting}
+\centering
+\fcolorbox{gray}{white}{\includegraphics[width=0.21\linewidth]{capturas/consulta04}}
+\captionof{figure}{Modelos sin ventas en junio de 2025}
+\end{minipage}
+
+\bigskip
+
+Puse la condición del mes en el \lstinline|ON| del \lstinline|LEFT JOIN|, así solo se unen las ventas de junio y las bicicletas que no tuvieron ninguna quedan con \lstinline|NULL|. Si la hubiera puesto en el \lstinline|WHERE|, ese filtro habría eliminado justamente las filas con \lstinline|NULL| y la consulta no habría devuelto ningún modelo.
+
+\section*{Consulta 5: vendedores sin ventas}
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}
+SELECT v.nombre AS `Vendedor`, t.nombre AS `Tienda`
+FROM vendedores v
+LEFT JOIN tiendas t ON v.id_tienda = t.id_tienda
+LEFT JOIN ventas ve ON v.id_vendedor = ve.id_vendedor
+WHERE ve.id_venta IS NULL
+ORDER BY v.nombre;
+\end{lstlisting}
+\centering
+\fcolorbox{gray}{white}{\includegraphics[width=0.29\linewidth]{capturas/consulta05}}
+\captionof{figure}{Vendedores sin ventas y su tienda}
+\end{minipage}
+
+\section*{Consulta 6: vendedores de una misma tienda}
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}
+SELECT a.nombre AS `Vendedor 1`,
+       a.fecha_ingreso AS `Ingreso 1`,
+       b.nombre AS `Vendedor 2`,
+       b.fecha_ingreso AS `Ingreso 2`,
+       t.nombre AS `Tienda`
+FROM vendedores a
+JOIN vendedores b ON a.id_tienda = b.id_tienda
+    AND a.fecha_ingreso < b.fecha_ingreso
+JOIN tiendas t ON a.id_tienda = t.id_tienda
+ORDER BY t.nombre, a.fecha_ingreso, b.fecha_ingreso;
+\end{lstlisting}
+\centering
+\fcolorbox{gray}{white}{\includegraphics[width=0.66\linewidth]{capturas/consulta06}}
+\captionof{figure}{Pares de vendedores de la misma tienda}
+\end{minipage}
+
+\section*{Consulta 7: tiendas sobre \$2.000.000 en Montaña y Ruta}
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}
+SELECT t.nombre AS `Tienda`, SUM(ve.unidades * b.precio) AS `Monto Montaña y Ruta`
+FROM tiendas t
+JOIN vendedores v ON t.id_tienda = v.id_tienda
+JOIN ventas ve ON v.id_vendedor = ve.id_vendedor
+JOIN bicicletas b ON ve.id_bicicleta = b.id_bicicleta
+WHERE b.categoria IN ('Montaña', 'Ruta')
+GROUP BY t.id_tienda, t.nombre
+HAVING SUM(ve.unidades * b.precio) > 2000000
+ORDER BY `Monto Montaña y Ruta` DESC;
+\end{lstlisting}
+\centering
+\fcolorbox{gray}{white}{\includegraphics[width=0.33\linewidth]{capturas/consulta07}}
+\captionof{figure}{Tiendas sobre \$2.000.000 en Montaña y Ruta}
+\end{minipage}
+
+\section*{Consulta 8: bicicletas sobre el precio promedio}
+
+\begin{minipage}{\linewidth}
+\textbf{Primera sentencia: precio promedio del catálogo}
+\begin{lstlisting}
+SELECT AVG(precio) AS `Precio promedio`
+FROM bicicletas;
+\end{lstlisting}
+\centering
+\fcolorbox{gray}{white}{\includegraphics[width=0.15\linewidth]{capturas/consulta08a}}
+\captionof{figure}{Precio promedio del catálogo}
+\end{minipage}
+
+\bigskip
+
+\begin{minipage}{\linewidth}
+\textbf{Segunda sentencia: bicicletas que superan ese promedio}
+\begin{lstlisting}
+SELECT modelo AS `Modelo`, precio AS `Precio`
+FROM bicicletas
+WHERE precio > (SELECT AVG(precio) FROM bicicletas)
+ORDER BY precio DESC;
+\end{lstlisting}
+\centering
+\fcolorbox{gray}{white}{\includegraphics[width=0.23\linewidth]{capturas/consulta08b}}
+\captionof{figure}{Bicicletas sobre el precio promedio}
+\end{minipage}
+
+\bigskip
+
+El precio promedio del catálogo es \$657.490 y lo obtuve con la subconsulta \lstinline|SELECT AVG(precio) FROM bicicletas|, que promedia el precio de las 8 bicicletas. En la primera sentencia lo muestro por separado y en la segunda lo uso dentro del \lstinline|WHERE| para filtrar.
+
+\section*{Consulta 9: vendedores sobre el promedio de unidades}
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}
+SELECT v.nombre AS `Vendedor`, AVG(ve.unidades) AS `Promedio de unidades`
+FROM vendedores v
+JOIN ventas ve ON v.id_vendedor = ve.id_vendedor
+GROUP BY v.id_vendedor, v.nombre
+HAVING AVG(ve.unidades) > (SELECT AVG(unidades) FROM ventas)
+ORDER BY `Promedio de unidades` DESC, v.nombre;
+\end{lstlisting}
+\centering
+\fcolorbox{gray}{white}{\includegraphics[width=0.31\linewidth]{capturas/consulta09}}
+\captionof{figure}{Vendedores sobre el promedio de unidades de la cadena}
+\end{minipage}
+
+\section*{Consulta 10: monto total por vendedor}
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}
+SELECT v.nombre AS `Vendedor`, SUM(ve.unidades * b.precio) AS `Monto total`
+FROM vendedores v
+LEFT JOIN ventas ve ON v.id_vendedor = ve.id_vendedor
+LEFT JOIN bicicletas b ON ve.id_bicicleta = b.id_bicicleta
+GROUP BY v.id_vendedor, v.nombre
+ORDER BY `Monto total` DESC;
+\end{lstlisting}
+\centering
+\fcolorbox{gray}{white}{\includegraphics[width=0.25\linewidth]{capturas/consulta10}}
+\captionof{figure}{Monto total vendido por vendedor}
+\end{minipage}
+
+\bigskip
+
+Fernanda Lillo y Rubén Castro aparecen con \lstinline|NULL| y no con 0 porque no tienen ventas: el \lstinline|LEFT JOIN| los mantiene, pero les deja en \lstinline|NULL| las columnas que vienen de ventas y bicicletas, y \lstinline|SUM| sobre puros \lstinline|NULL| devuelve \lstinline|NULL|. Para que mostraran 0 habría que envolver la suma con \lstinline|COALESCE(SUM(ve.unidades * b.precio), 0)|.
+
+\end{document}
